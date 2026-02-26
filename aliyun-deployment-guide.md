@@ -161,14 +161,14 @@ Install-WindowsFeature -Name Web-Server, Web-WebServer, Web-Common-Http, Web-Def
 
 # 方法2：手动下载安装
 # 1. 下载URL Rewrite模块：
-#    x64版本：https://download.microsoft.com/download/C/9/E/C9E8180D-4E51-40A6-A9BF-776990D8BCA9/rewrite_amd64.msi
-#    x86版本：https://download.microsoft.com/download/C/9/E/C9E8180D-4E51-40A6-A9BF-776990D8BCA9/rewrite_x86.msi
+#    x64版本：https://download.microsoft.com/download/1/2/8/128E2E22-C1B9-44A4-BE2A-5859ED1D4592/rewrite_amd64_zh-CN.msi
+#    x86版本：https://download.microsoft.com/download/D/4/E/D4EFF6F2-8B98-4D90-A77F-786E1E5E0D40/rewrite_x86_zh-CN.msi
 # 2. 运行安装程序：
-msiexec /i rewrite_amd64.msi /quiet /norestart
+msiexec /i rewrite_amd64_zh-CN.msi /quiet /norestart
 
 # 方法3：使用PowerShell下载并安装
-$rewriteUrl = "https://download.microsoft.com/download/C/9/E/C9E8180D-4E51-40A6-A9BF-776990D8BCA9/rewrite_amd64.msi"
-$rewriteInstaller = "C:\Temp\rewrite_amd64.msi"
+$rewriteUrl = "https://download.microsoft.com/download/1/2/8/128E2E22-C1B9-44A4-BE2A-5859ED1D4592/rewrite_amd64_zh-CN.msi"
+$rewriteInstaller = "C:\Temp\rewrite_amd64_zh-CN.msi"
 New-Item -ItemType Directory -Path "C:\Temp" -Force -ErrorAction SilentlyContinue
 Invoke-WebRequest -Uri $rewriteUrl -OutFile $rewriteInstaller
 Start-Process msiexec -ArgumentList "/i `"$rewriteInstaller`" /quiet /norestart" -Wait
