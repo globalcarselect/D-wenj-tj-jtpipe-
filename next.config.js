@@ -3,7 +3,7 @@ const nextConfig = {
   output: 'standalone',
 
   images: {
-    domains: ['www.jtpipeline.com', 'cdn.jtpipeline.com', 'images.unsplash.com', 'via.placeholder.com', 'localhost'],
+    domains: ['www.cn-pipes.com', 'cdn.cn-pipes.com', 'images.unsplash.com', 'via.placeholder.com', 'localhost'],
     formats: ['image/webp', 'image/avif'],
     unoptimized: true, // Allow local images to be served directly
   },
