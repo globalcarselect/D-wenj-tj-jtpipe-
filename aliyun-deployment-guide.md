@@ -1,446 +1,358 @@
 # 阿里云Next.js外贸网站部署文档 (Windows Server 2025)
 
-## 服务器环境要求
-- 操作系统：Windows Server 2025 数据中心版 64位中文版
-- 内存：至少4GB RAM (您的配置：4 GiB)
-- 存储：至少100GB SSD (您的配置：100 GiB ESSD AutoPL 云盘)
-- CPU：至少2核 (您的配置：2 核)
-- 网络：公网IP (您的配置：8.221.117.121)
-- 带宽：至少10 Mbps (您的配置：100 Mbps)
+## 🖥️ 部署环境说明
 
-## 部署前准备
+### 本地开发环境 (您的电脑)
+- **操作系统**: Windows 10/11
+- **项目路径**: `D:\wenj\独立站\tj-jtpipe\DM`
+- **开发工具**: Visual Studio Code, Git, Node.js
+- **测试地址**: http://localhost:3000
 
-### 1. 阿里云ECS实例信息
-- 实例ID：您的实例
-- 公网IP：8.221.117.121
-- 私网IP：172.29.17.41
-- 操作系统：Windows Server 2025 数据中心版 64位中文版
-- 实例规格：ecs.e-c1m2.large (2核4GB)
-- 系统盘：100 GiB ESSD AutoPL 云盘
-- 公网带宽：100 Mbps (按使用流量计费)
+### 阿里云服务器环境
+- **操作系统**: Windows Server 2025 数据中心版 64位中文版
+- **服务器IP**: 8.221.117.121
+- **实例规格**: ecs.e-c1m2.large (2核4GB)
+- **存储**: 100 GiB ESSD AutoPL 云盘
+- **带宽**: 100 Mbps
+- **域名**: cn-pipes.com
 
-### 2. 域名准备
-- 注册域名：cn-pipes.com
-- 完成ICP备案（如使用国内服务器）
-- 配置DNS解析到服务器IP 8.221.117.121
+## 📋 部署前准备
 
-### 3. 项目信息
-- 项目类型：Next.js 14 应用
-- 技术栈：React, TypeScript, Tailwind CSS
-- 功能特性：多语言支持（13种语言）、响应式设计、产品展示
-- GitHub仓库：https://github.com/globalcarselect/D-wenj-tj-jtpipe-
+### 1. 本地环境准备 (您的电脑)
+```bash
+# 检查本地项目状态
+cd D:\wenj\独立站\tj-jtpipe\DM
+git status
+npm run build
+```
 
-## 部署步骤
-
-### 1. 服务器初始化 (Windows Server 2025)
+### 2. 服务器环境检查 (阿里云服务器)
 ```powershell
-# 以管理员身份运行 PowerShell
-
+# 远程连接到阿里云服务器后执行
 # 检查系统信息
 systeminfo
 
-# 安装Windows更新 (方法1: 通过Windows Update PowerShell模块)
-# 首先安装PSWindowsUpdate模块 (如果需要)
-Install-Module -Name PSWindowsUpdate -Force -AllowClobber
-Import-Module PSWindowsUpdate
-Get-WindowsUpdate -AcceptAll -Install -AutoReboot
+# 检查网络连接
+ping baidu.com
 
-# 或方法2: 通过设置应用手动更新
-# 1. 打开"设置" -> "更新和安全" -> "Windows 更新"
-# 2. 点击"检查更新"
-# 3. 安装所有可用更新并重启
-
-# 安装必要的Windows功能
-Install-WindowsFeature -Name Web-Server, ![alt text](image.png)
-
-# 重启服务器（如果需要）
-Restart-Computer -Force
-
-PS C:\Users\Administrator> Install-WindowsFeature -Name Web-Server
-
+# 检查端口状态
+netstat -an | findstr :80
+netstat -an | findstr :3000
 ```
 
-### 2. 安装开发环境和工具
+## 🚀 完整部署流程
 
-#### 安装Node.js (使用NVM for Windows)
-```powershell
-# 方法一：使用Chocolatey安装Node.js
-# 首先安装Chocolatey包管理器
-Set-ExecutionPolicy Bypass -Scope Process -Force
-[System.Net.ServicePointManager]::SecurityProtocol = [System.Net.ServicePointManager]::SecurityProtocol -bor 3072
-iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+### 步骤1: 本地代码准备 (您的电脑)
+```bash
+# 1. 确保所有更改已提交
+cd D:\wenj\独立站\tj-jtpipe\DM
+git add .
+git commit -m "准备部署到阿里云服务器"
 
-# 安装Node.js LTS版本
-choco install nodejs-lts -y
+# 2. 推送到GitHub
+git push origin main
 
-# 方法二：手动下载安装Node.js
-# 访问 https://nodejs.org/ 下载Windows安装包
-# 安装后验证版本
-node --version
-npm --version
-```
-
-#### 安装Git
-```powershell
-# 使用Chocolatey安装Git
-choco install git -y
-
-# 或下载Git for Windows安装包
-# 访问 https://git-scm.com/download/win
-
-# 配置Git用户信息
-git config --global user.name "Your Name"
-git config --global user.email "your.email@example.com"
-```
-
-#### 安装Docker Desktop for Windows (可选)
-```powershell
-# 下载Docker Desktop for Windows
-# 访问 https://docs.docker.com/desktop/install/windows-install/
-# 注意：需要启用Hyper-V或WSL 2后端
-```
-
-### 3. 部署Next.js应用程序
-
-#### 从GitHub克隆项目
-```powershell
-# 创建项目目录
-New-Item -ItemType Directory -Path "C:\Websites" -Force
-cd C:\Websites
-
-# 克隆仓库
-git clone https://github.com/globalcarselect/D-wenj-tj-jtpipe-.git jtpipeline
-cd jtpipeline
-
-# 安装依赖
-npm install
-```
-
-#### 配置环境变量
-```powershell
-# 创建环境变量文件
-Copy-Item .env.example .env.production -ErrorAction SilentlyContinue
-
-# 编辑环境变量文件（根据实际情况调整）
-notepad .env.production
-```
-
-`.env.production` 文件内容示例：
-```
-NODE_ENV=production
-NEXT_PUBLIC_SITE_URL=https://www.cn-pipes.com
-NEXT_PUBLIC_API_BASE_URL=https://api.cn-pipes.com
-# 多语言配置
-NEXT_PUBLIC_DEFAULT_LOCALE=zh-CN
-NEXT_PUBLIC_SUPPORTED_LOCALES=zh-CN,en-US,ja-JP,ko-KR,fr-FR,de-DE,es-ES,pt-BR,ru-RU,ar-SA,it-IT,nl-NL,tr-TR
-```
-
-#### 构建生产版本
-```powershell
-# 构建项目
-# 重要：确保当前目录是项目目录 C:\Websites\jtpipeline
-# 使用以下命令检查当前目录：pwd
-# 如果需要切换目录：cd C:\Websites\jtpipeline
+# 3. 构建生产版本
 npm run build
 
-# 构建成功后，可以测试运行
-npm start
+# 4. 验证构建结果
+npm run start
 ```
 
-### 4. 配置Web服务器 (IIS + URL Rewrite + Application Request Routing)
-
-#### 安装IIS和相关模块
+### 步骤2: 服务器环境配置 (阿里云服务器)
 ```powershell
-# 启用IIS功能
-Install-WindowsFeature -Name Web-Server, Web-WebServer, Web-Common-Http, Web-Default-Doc, Web-Dir-Browsing, Web-Http-Errors, Web-Static-Content, Web-Health, Web-Http-Logging, Web-Performance, Web-Stat-Compression, Web-Security, Web-Filtering, Web-App-Dev, Web-Net-Ext45, Web-Asp-Net45, Web-ISAPI-Ext, Web-ISAPI-Filter, Web-Mgmt-Tools
+# 1. 以管理员身份运行PowerShell
 
-# 安装URL Rewrite模块
-# 方法1：通过Web Platform Installer (WebPI) - 推荐
-# 下载并安装Web Platform Installer：https://www.microsoft.com/web/downloads/platform.aspx
-# 通过WebPI搜索并安装"URL Rewrite 2.1"
+# 2. 安装Node.js (如果未安装)
+# 下载Node.js 18.x LTS版本
+$nodeUrl = "https://nodejs.org/dist/v18.18.0/node-v18.18.0-x64.msi"
+$nodeInstaller = "$env:TEMP\nodejs.msi"
+Invoke-WebRequest -Uri $nodeUrl -OutFile $nodeInstaller
+Start-Process msiexec.exe -Wait -ArgumentList '/i', $nodeInstaller, '/quiet', '/norestart'
 
-# 方法2：手动下载安装
-# 1. 下载URL Rewrite模块：
-#    x64版本：https://download.microsoft.com/download/1/2/8/128E2E22-C1B9-44A4-BE2A-5859ED1D4592/rewrite_amd64_zh-CN.msi
-#    x86版本：https://download.microsoft.com/download/D/4/E/D4EFF6F2-8B98-4D90-A77F-786E1E5E0D40/rewrite_x86_zh-CN.msi
-# 2. 运行安装程序：
-msiexec /i rewrite_amd64_zh-CN.msi /quiet /norestart
+# 3. 验证Node.js安装
+node --version
+npm --version
 
-# 方法3：使用PowerShell下载并安装
-$rewriteUrl = "https://download.microsoft.com/download/1/2/8/128E2E22-C1B9-44A4-BE2A-5859ED1D4592/rewrite_amd64_zh-CN.msi"
-$rewriteInstaller = "C:\Temp\rewrite_amd64_zh-CN.msi"
-New-Item -ItemType Directory -Path "C:\Temp" -Force -ErrorAction SilentlyContinue
-Invoke-WebRequest -Uri $rewriteUrl -OutFile $rewriteInstaller
-Start-Process msiexec -ArgumentList "/i `"$rewriteInstaller`" /quiet /norestart" -Wait
+# 4. 安装Git (如果未安装)
+winget install Git.Git
 
-# 验证URL Rewrite模块安装
-# 重启IIS服务
-iisreset
-
-# 检查URL Rewrite模块是否安装成功
-Get-WebGlobalModule | Where-Object {$_.Name -eq "UrlRewriteModule"} | Format-Table Name, Image
+# 5. 安装PM2进程管理器
+npm install -g pm2
 ```
 
-#### 配置IIS反向代理到Next.js
-1. 打开IIS管理器
-2. 创建新网站：
-   - 网站名称：jtpipeline
-   - 物理路径：C:\Websites\jtpipeline
-   - 绑定：端口80，主机名（可选）
-3. 配置URL重写规则：
-   - 添加反向代理规则，将所有请求代理到 `http://localhost:3000`
+### 步骤3: 项目部署到服务器 (阿里云服务器)
+```powershell
+# 1. 创建网站目录
+mkdir C:\Websites\cn-pipes
+cd C:\Websites\cn-pipes
 
-或使用web.config文件：
-```xml
-<?xml version="1.0" encoding="UTF-8"?>
+# 2. 从GitHub克隆项目
+git clone https://github.com/globalcarselect/D-wenj-tj-jtpipe- .
+
+# 3. 安装项目依赖
+npm install
+
+# 4. 构建生产版本
+npm run build
+
+# 5. 创建PM2配置文件
+echo 'module.exports = {
+  apps: [{
+    name: "cn-pipes-website",
+    script: "./node_modules/next/dist/bin/next",
+    args: "start -p 3000",
+    instances: "max",
+    exec_mode: "cluster",
+    env: {
+      NODE_ENV: "production",
+      PORT: 3000
+    }
+  }]
+};' > ecosystem.config.js
+
+# 6. 启动应用
+pm2 start ecosystem.config.js
+pm2 save
+pm2 startup
+```
+
+### 步骤4: IIS配置 (阿里云服务器)
+```powershell
+# 1. 安装IIS (如果未安装)
+Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServerRole
+Enable-WindowsOptionalFeature -Online -FeatureName IIS-WebServer
+Enable-WindowsOptionalFeature -Online -FeatureName IIS-CommonHttpFeatures
+Enable-WindowsOptionalFeature -Online -FeatureName IIS-HttpErrors
+Enable-WindowsOptionalFeature -Online -FeatureName IIS-HttpRedirect
+Enable-WindowsOptionalFeature -Online -FeatureName IIS-ApplicationDevelopment
+
+# 2. 安装URL重写模块
+# 下载并安装 URL Rewrite 模块
+$rewriteUrl = "https://download.microsoft.com/download/1/2/8/128E2E22-C1B9-44A4-BE2A-5859ED1D4592/rewrite_amd64_en-US.msi"
+$rewriteInstaller = "$env:TEMP\rewrite.msi"
+Invoke-WebRequest -Uri $rewriteUrl -OutFile $rewriteInstaller
+Start-Process msiexec.exe -Wait -ArgumentList '/i', $rewriteInstaller, '/quiet', '/norestart'
+
+# 3. 创建IIS网站
+Import-Module WebAdministration
+
+# 停止默认网站
+Stop-WebSite "Default Web Site"
+
+# 创建新网站
+New-Website -Name "cn-pipes" -Port 80 -PhysicalPath "C:\Websites\cn-pipes" -ApplicationPool ".NET v4.5"
+
+# 4. 配置web.config
+$webConfigContent = @"
+<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <configuration>
   <system.webServer>
     <rewrite>
       <rules>
-        <rule name="ReverseProxyInboundRule1" stopProcessing="true">
-          <match url="(.*)" />
-          <action type="Rewrite" url="http://localhost:3000/{R:1}" />
+        <rule name=\"ReverseProxyInboundRule1\" stopProcessing=\"true\">
+          <match url=\"(.*)\" />
+          <action type=\"Rewrite\" url=\"http://localhost:3000/{R:1}\" />
         </rule>
       </rules>
     </rewrite>
+    <defaultDocument>
+      <files>
+        <add value=\"index.html\" />
+      </files>
+    </defaultDocument>
   </system.webServer>
 </configuration>
+"@
+
+Set-Content -Path "C:\Websites\cn-pipes\web.config" -Value $webConfigContent
+
+# 5. 启动网站
+Start-Website "cn-pipes"
 ```
 
-### 5. 文件同步和Windows服务配置
-
-#### 文件路径说明
-- **本地开发环境：** `D:\wenj\独立站\tj-jtpipe\DM\`
-- **阿里云服务器：** `C:\Users\Adim\cn-pipes`
-
-#### 文件同步方案（选择一种）
-
-**方案1：使用SCP传输（推荐）**
+### 步骤5: 防火墙配置 (阿里云服务器)
 ```powershell
-# 在本地电脑准备传输包
-Set-Location "D:\wenj\独立站\tj-jtpipe\DM"
-Compress-Archive -Path "server.js", "public", "package.json" -DestinationPath "cn-pipes-deployment.zip" -Force
+# 1. 配置Windows防火墙
+New-NetFirewallRule -DisplayName "HTTP Port 80" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow
+New-NetFirewallRule -DisplayName "Node.js Port 3000" -Direction Inbound -Protocol TCP -LocalPort 3000 -Action Allow
 
-# 上传到服务器（使用SCP或FTP）
-scp cn-pipes-deployment.zip Administrator@172.29.17.41:C:\Users\Adim\cn-pipes\
-
-# 在服务器解压
-Set-Location "C:\Users\Adim\cn-pipes"
-Expand-Archive -Path "cn-pipes-deployment.zip" -DestinationPath "." -Force
-Remove-Item "cn-pipes-deployment.zip"
+# 2. 配置阿里云安全组 (需要在阿里云控制台操作)
+# - 登录阿里云控制台 -> ECS实例 -> 安全组
+# - 添加入站规则：允许HTTP(80)、HTTPS(443)端口
 ```
 
-**方案2：手动创建必要文件（如果无法传输）**
+### 步骤6: 域名配置 (阿里云控制台)
+```
+# 在阿里云域名控制台配置DNS解析
+# 记录类型: A
+# 主机记录: @ 和 www
+# 记录值: 8.221.117.121
+# TTL: 10分钟
+```
+
+## 🔧 自动化部署脚本
+
+### 服务器端一键部署脚本 (阿里云服务器)
 ```powershell
-# 在阿里云服务器上执行
-Set-Location "C:\Users\Adim\cn-pipes"
-if (!(Test-Path "public")) { New-Item -ItemType Directory -Path "public" -Force }
+# 保存为 C:\Scripts\deploy.ps1
+param(
+    [string]$ProjectPath = "C:\Websites\cn-pipes"
+)
 
-# 手动创建server.js和index.html文件
-# （使用下面提供的完整代码）
-```
+Write-Host "开始部署 cn-pipes 网站..." -ForegroundColor Green
 
-#### 配置PM2 Windows服务
-```powershell
-npm install -g pm2
+# 1. 停止现有服务
+pm2 stop cn-pipes-website
 
-# 启动网站服务器
-pm2 start server.js --name "cn-pipes-website"
-
-# 保存PM2配置
-pm2 save
-
-# Windows系统不支持pm2-startup，使用以下替代方案：
-# 1. 创建Windows计划任务开机启动
-# 2. 手动启动：pm2 resurrect
-# 3. 使用批处理脚本：start-website.bat
-```
-
-### 6. SSL证书配置 (使用阿里云SSL证书)
-
-#### 申请免费SSL证书
-1. 登录阿里云控制台
-2. 进入SSL证书服务
-3. 申请免费DV SSL证书
-4. 完成域名验证
-
-#### 安装SSL证书到IIS
-1. 下载证书文件（.pfx格式）
-2. 在IIS管理器中导入证书：
-   - 打开服务器证书
-   - 点击"导入"
-   - 选择.pfx文件，输入密码
-3. 为网站绑定HTTPS：
-   - 编辑网站绑定
-   - 添加HTTPS绑定，选择导入的证书
-
-### 7. 多语言配置
-
-#### 验证多语言功能
-项目已内置13种语言支持：
-- 中文简体 (zh-CN)
-- 英语 (en-US)
-- 日语 (ja-JP)
-- 韩语 (ko-KR)
-- 法语 (fr-FR)
-- 德语 (de-DE)
-- 西班牙语 (es-ES)
-- 葡萄牙语 (pt-BR)
-- 俄语 (ru-RU)
-- 阿拉伯语 (ar-SA)
-- 意大利语 (it-IT)
-- 荷兰语 (nl-NL)
-- 土耳其语 (tr-TR)
-
-语言切换功能已集成到网站头部，部署后即可使用。
-
-### 8. 性能优化
-
-#### 启用静态文件缓存
-```xml
-<!-- 在web.config中添加缓存规则 -->
-<configuration>
-  <system.webServer>
-    <staticContent>
-      <clientCache cacheControlMode="UseMaxAge" cacheControlMaxAge="365.00:00:00" />
-    </staticContent>
-  </system.webServer>
-</configuration>
-```
-
-#### 配置阿里云CDN
-1. 登录阿里云控制台，开通CDN服务
-2. 添加加速域名：www.cn-pipes.com
-3. 配置源站信息：8.221.117.121
-4. 配置缓存策略：
-   - 静态文件（图片、CSS、JS）：缓存30天
-   - HTML文件：缓存1小时
-
-### 9. 安全配置
-
-#### 配置Windows防火墙
-```powershell
-# 开放HTTP和HTTPS端口
-New-NetFirewallRule -DisplayName "HTTP-In" -Direction Inbound -Protocol TCP -LocalPort 80 -Action Allow
-New-NetFirewallRule -DisplayName "HTTPS-In" -Direction Inbound -Protocol TCP -LocalPort 443 -Action Allow
-
-# 限制管理端口（如远程桌面）
-New-NetFirewallRule -DisplayName "RDP-In" -Direction Inbound -Protocol TCP -LocalPort 3389 -RemoteAddress "您的IP地址" -Action Allow
-```
-
-#### 阿里云安全组配置
-1. 登录阿里云ECS控制台
-2. 进入安全组配置
-3. 添加入站规则：
-   - 协议：TCP，端口：80，源：0.0.0.0/0
-   - 协议：TCP，端口：443，源：0.0.0.0/0
-   - 协议：TCP，端口：3000，源：0.0.0.0/0（或限制为本地）
-
-### 10. 备份策略
-
-#### 项目文件备份
-```powershell
-# 创建备份脚本 backup.ps1
-$backupDir = "C:\Backups\jtpipeline"
-$sourceDir = "C:\Websites\jtpipeline"
-$date = Get-Date -Format "yyyyMMdd_HHmmss"
-
-New-Item -ItemType Directory -Path $backupDir -Force
-Compress-Archive -Path $sourceDir -DestinationPath "$backupDir\backup_$date.zip" -Force
-
-# 删除7天前的备份
-Get-ChildItem -Path $backupDir -Filter "backup_*.zip" | Where-Object {$_.CreationTime -lt (Get-Date).AddDays(-7)} | Remove-Item
-```
-
-#### 设置定时备份任务
-```powershell
-# 创建计划任务
-$action = New-ScheduledTaskAction -Execute "PowerShell.exe" -Argument "-File C:\Scripts\backup.ps1"
-$trigger = New-ScheduledTaskTrigger -Daily -At 2:00AM
-Register-ScheduledTask -TaskName "jtpipeline_backup" -Action $action -Trigger $trigger -Description "每日备份jtpipeline网站"
-```
-
-### 11. 监控和维护
-
-#### 使用Windows性能监视器
-1. 打开"性能监视器"
-2. 添加计数器：
-   - CPU使用率
-   - 内存使用量
-   - 网络流量
-   - 磁盘I/O
-
-#### 配置阿里云云监控
-1. 登录阿里云云监控控制台
-2. 为ECS实例安装监控插件
-3. 设置报警规则：
-   - CPU使用率 > 80%
-   - 内存使用率 > 85%
-   - 磁盘使用率 > 90%
-
-### 12. 故障排除
-
-#### 常见问题
-1. **Next.js应用无法启动**：
-   ```powershell
-   # 检查端口占用
-   netstat -ano | findstr :3000
-   
-   # 检查Node.js进程
-   Get-Process node
-   
-   # 查看PM2日志
-   pm2 logs jtpipeline-website
-   ```
-
-2. **IIS反向代理不工作**：
-   - 确认URL Rewrite模块已安装
-   - 检查web.config配置
-   - 查看IIS日志：C:\inetpub\logs\LogFiles
-
-3. **多语言切换无效**：
-   - 确认浏览器语言设置
-   - 检查本地化文件是否存在
-   - 验证语言上下文是否正确加载
-
-#### 调试命令
-```powershell
-# 检查服务状态
-Get-Service W3SVC  # IIS服务
-pm2 status          # PM2进程状态
-
-# 查看日志
-Get-EventLog -LogName Application -Newest 20 | Where-Object {$_.Source -like "*Node*" -or $_.Source -like "*IIS*"}
-pm2 logs jtpipeline-website --lines 100
-```
-
-### 13. 自动部署脚本
-
-创建自动化部署脚本 `deploy.ps1`：
-```powershell
-# deploy.ps1
-Write-Host "开始部署 jtpipeline 网站..." -ForegroundColor Green
-
-# 停止现有服务
-pm2 stop jtpipeline-website
-pm2 delete jtpipeline-website
-
-# 拉取最新代码
-cd C:\Websites\jtpipeline
+# 2. 更新代码
+cd $ProjectPath
 git pull origin main
 
-# 安装依赖
+# 3. 安装依赖
 npm install
 
-# 构建项目
+# 4. 构建项目
 npm run build
 
-# 启动服务
-pm2 start npm --name "jtpipeline-website" -- start
-pm2 save
+# 5. 启动服务
+pm2 start ecosystem.config.js
+
+# 6. 检查服务状态
+pm2 status
 
 Write-Host "部署完成！" -ForegroundColor Green
+Write-Host "网站地址: http://cn-pipes.com" -ForegroundColor Yellow
 ```
 
-## 完成部署
-完成以上步骤后，访问您的域名 https://www.cn-pipes.com 即可看到网站正常运行。多语言切换功能位于网站右上角。
+### 本地同步脚本 (您的电脑)
+```bash
+# 保存为 deploy-local.bat
+@echo off
+echo 开始准备部署到阿里云服务器...
+
+cd /d D:\wenj\独立站\tj-jtpipe\DM
+
+echo 1. 检查Git状态
+git status
+
+echo 2. 提交更改
+git add .
+git commit -m "自动部署更新"
+
+echo 3. 推送到GitHub
+git push origin main
+
+echo 4. 构建项目
+npm run build
+
+echo 部署准备完成！请在服务器上运行部署脚本。
+pause
+```
+
+## 🛠️ 故障排除
+
+### 常见问题及解决方案
+
+#### 问题1: 网站无法访问
+**环境**: 阿里云服务器
+```powershell
+# 检查服务状态
+pm2 status
+
+# 检查端口监听
+netstat -an | findstr :3000
+netstat -an | findstr :80
+
+# 检查IIS状态
+Get-Website -Name "cn-pipes"
+
+# 检查防火墙规则
+Get-NetFirewallRule -DisplayName "HTTP*" | Format-Table DisplayName, Enabled, Direction, Action
+```
+
+#### 问题2: Node.js应用启动失败
+**环境**: 阿里云服务器
+```powershell
+# 查看PM2日志
+pm2 logs cn-pipes-website
+
+# 手动启动测试
+cd C:\Websites\cn-pipes
+npm run start
+
+# 检查端口占用
+netstat -ano | findstr :3000
+```
+
+#### 问题3: Git同步失败
+**环境**: 您的电脑
+```bash
+# 检查Git远程仓库
+git remote -v
+
+# 强制推送（谨慎使用）
+git push -f origin main
+
+# 重置本地更改
+git reset --hard HEAD
+git pull origin main
+```
+
+## 📊 监控和维护
+
+### 服务器监控 (阿里云服务器)
+```powershell
+# 创建监控脚本 C:\Scripts\monitor.ps1
+while ($true) {
+    Clear-Host
+    Write-Host "=== 网站监控面板 ===" -ForegroundColor Cyan
+    Write-Host "时间: $(Get-Date)" -ForegroundColor Yellow
+    
+    # PM2状态
+    Write-Host "`nPM2应用状态:" -ForegroundColor Green
+    pm2 list
+    
+    # 系统资源
+    Write-Host "`n系统资源使用:" -ForegroundColor Green
+    Get-Counter "\Processor(_Total)\% Processor Time" -SampleInterval 1 -MaxSamples 1
+    Get-Counter "\Memory\Available MBytes" -SampleInterval 1 -MaxSamples 1
+    
+    # 网络连接
+    Write-Host "`n网络连接状态:" -ForegroundColor Green
+    netstat -an | findstr :3000 | Measure-Object | Select-Object Count
+    
+    Start-Sleep -Seconds 30
+}
+```
+
+## 📞 技术支持
+
+### 紧急联系方式
+- **服务器问题**: 阿里云工单系统
+- **代码问题**: GitHub Issues
+- **部署问题**: 查看本文档故障排除部分
+
+### 日志文件位置
+- **PM2日志**: `C:\Users\Administrator\.pm2\logs\`
+- **IIS日志**: `C:\inetpub\logs\LogFiles\`
+- **应用日志**: `C:\Websites\cn-pipes\.next\`
+
+---
+
+## ✅ 部署完成检查清单
+
+- [ ] 本地代码已提交并推送到GitHub
+- [ ] 服务器Node.js环境配置完成
+- [ ] 项目成功克隆到服务器
+- [ ] 依赖安装和构建成功
+- [ ] PM2进程管理配置完成
+- [ ] IIS反向代理配置正确
+- [ ] 防火墙端口已开放
+- [ ] 域名解析生效
+- [ ] 网站可通过域名访问
+- [ ] 所有功能测试通过
+
+**部署完成时间**: $(Get-Date)
+**部署负责人**: 系统管理员
+**下次维护时间**: 每月第一个周一
