@@ -1,11 +1,14 @@
 # Next.js网站自动化部署脚本 (Windows Server 2025)
 # 适用于阿里云ECS Windows Server 2025部署
+# 更新版本：2025-02-27 - 优化性能和错误处理
 
 param(
-    [string]$WebsitePath = "C:\Websites\jtpipeline",
+    [string]$WebsitePath = "C:\Websites\cn-pipes",
     [string]$GitRepo = "https://github.com/globalcarselect/D-wenj-tj-jtpipe-.git",
     [string]$Branch = "main",
-    [switch]$SetupEnvironment = $false
+    [switch]$SetupEnvironment = $false,
+    [switch]$SkipBuild = $false,
+    [switch]$ForceDeploy = $false
 )
 
 # 颜色定义
@@ -54,6 +57,13 @@ function Start-Deployment {
     Write-Host "===============================================" -ForegroundColor Magenta
     Write-Host "部署开始时间: $(Get-Date)" -ForegroundColor Cyan
     Write-Host ""
+
+    # 显示部署信息
+    Write-Info "目标路径: $WebsitePath"
+    Write-Info "Git仓库: $GitRepo"
+    Write-Info "分支: $Branch"
+    Write-Info "跳过构建: $SkipBuild"
+    Write-Info "强制部署: $ForceDeploy"
 
     # 检查管理员权限
     if (-not (Test-Administrator)) {

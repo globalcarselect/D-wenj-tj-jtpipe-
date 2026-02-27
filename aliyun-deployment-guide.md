@@ -207,23 +207,53 @@ Get-WebGlobalModule | Where-Object {$_.Name -eq "UrlRewriteModule"} | Format-Tab
 </configuration>
 ```
 
-### 5. 配置Windows服务 (使用PM2)
+### 5. 文件同步和Windows服务配置
 
-#### 安装PM2
+#### 文件路径说明
+- **本地开发环境：** `D:\wenj\独立站\tj-jtpipe\DM\`
+- **阿里云服务器：** `C:\Users\Adim\cn-pipes`
+
+#### 文件同步方案（选择一种）
+
+**方案1：使用SCP传输（推荐）**
+```powershell
+# 在本地电脑准备传输包
+Set-Location "D:\wenj\独立站\tj-jtpipe\DM"
+Compress-Archive -Path "server.js", "public", "package.json" -DestinationPath "cn-pipes-deployment.zip" -Force
+
+# 上传到服务器（使用SCP或FTP）
+scp cn-pipes-deployment.zip Administrator@172.29.17.41:C:\Users\Adim\cn-pipes\
+
+# 在服务器解压
+Set-Location "C:\Users\Adim\cn-pipes"
+Expand-Archive -Path "cn-pipes-deployment.zip" -DestinationPath "." -Force
+Remove-Item "cn-pipes-deployment.zip"
+```
+
+**方案2：手动创建必要文件（如果无法传输）**
+```powershell
+# 在阿里云服务器上执行
+Set-Location "C:\Users\Adim\cn-pipes"
+if (!(Test-Path "public")) { New-Item -ItemType Directory -Path "public" -Force }
+
+# 手动创建server.js和index.html文件
+# （使用下面提供的完整代码）
+```
+
+#### 配置PM2 Windows服务
 ```powershell
 npm install -g pm2
 
-# 创建PM2 Windows服务
-npm install -g pm2-windows-startup
-
-# 启动Next.js应用
-pm2 start npm --name "jtpipeline-website" -- start
+# 启动网站服务器
+pm2 start server.js --name "cn-pipes-website"
 
 # 保存PM2配置
 pm2 save
 
-# 设置PM2开机自启
-pm2-startup install
+# Windows系统不支持pm2-startup，使用以下替代方案：
+# 1. 创建Windows计划任务开机启动
+# 2. 手动启动：pm2 resurrect
+# 3. 使用批处理脚本：start-website.bat
 ```
 
 ### 6. SSL证书配置 (使用阿里云SSL证书)

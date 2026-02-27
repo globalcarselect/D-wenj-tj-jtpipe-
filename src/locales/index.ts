@@ -597,5 +597,8 @@ export const translations = {
 export type TranslationKey = keyof typeof translations.en;
 
 export function getTranslation(key: TranslationKey, language: Language): string {
-  return translations[language][key] || translations[defaultLanguage][key] || key;
+  const langTranslations = translations[language] as Record<TranslationKey, string>;
+  const defaultTranslations = translations[defaultLanguage] as Record<TranslationKey, string>;
+  
+  return langTranslations[key] || defaultTranslations[key] || key;
 }

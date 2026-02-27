@@ -32,7 +32,7 @@ const CustomerReviews = () => {
         return a.rating - b.rating;
       } else {
         // Newest first (assuming id is chronological)
-        return parseInt(b.id) - parseInt(a.id);
+        return b.id - a.id;
       }
     });
 

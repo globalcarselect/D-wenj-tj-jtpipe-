@@ -7,6 +7,7 @@
   ],
   "ampDevFiles": [
     "static/chunks/fallback/webpack.js",
+    "static/chunks/fallback/vendors-node_modules_next_dist_client_dev_fouc_js-node_modules_next_dist_client_dev_on-demand-cc5085.js",
     "static/chunks/fallback/amp.js"
   ],
   "lowPriorityFiles": [],
@@ -14,11 +15,15 @@
   "pages": {
     "/_app": [
       "static/chunks/fallback/webpack.js",
+      "static/chunks/fallback/vendors-node_modules_next_dist_client_dev_fouc_js-node_modules_next_dist_client_dev_on-demand-cc5085.js",
+      "static/chunks/fallback/vendors-node_modules_next_dist_client_next-dev_js.js",
       "static/chunks/fallback/main.js",
       "static/chunks/fallback/pages/_app.js"
     ],
     "/_error": [
       "static/chunks/fallback/webpack.js",
+      "static/chunks/fallback/vendors-node_modules_next_dist_client_dev_fouc_js-node_modules_next_dist_client_dev_on-demand-cc5085.js",
+      "static/chunks/fallback/vendors-node_modules_next_dist_client_next-dev_js.js",
       "static/chunks/fallback/main.js",
       "static/chunks/fallback/pages/_error.js"
     ]

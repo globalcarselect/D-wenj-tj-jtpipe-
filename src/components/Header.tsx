@@ -13,11 +13,10 @@ const Header = () => {
   const navLinks = [
     { name: t('nav.home'), href: '/' },
     { name: t('nav.products'), href: '/products' },
-    { name: t('nav.about'), href: '/about' },
-    { name: t('nav.certifications'), href: '/certifications' },
     { name: t('nav.news'), href: '/news' },
-    { name: '外贸出口', href: '/export' },
-    { name: '社交媒体', href: '/social' },
+    { name: 'Case', href: '/case' },
+    { name: 'Factory Show', href: '/factory' },
+    { name: t('nav.about'), href: '/about' },
     { name: t('nav.contact'), href: '/contact' },
   ];
 

@@ -4,6 +4,31 @@
 const WP_API_BASE_URL = process.env.WP_API_BASE_URL || 'http://localhost:8080/wp-json/wp/v2';
 
 // Types for WordPress content
+interface WordPressACF {
+  hero_title?: string;
+  hero_subtitle?: string;
+  hero_quote_button?: string;
+  hero_products_button?: string;
+  company_scale_data?: {
+    established?: string;
+    employees?: string;
+    factory_area?: string;
+    annual_capacity?: string;
+    export_countries?: string;
+    global_customers?: string;
+  };
+  company_description?: string;
+  product_types?: string[];
+  product_image?: string;
+  certification_icon?: string;
+  certification_image?: string;
+  company?: string;
+  country?: string;
+  rating?: number;
+  avatar?: string;
+  date?: string;
+}
+
 interface WordPressPost {
   id: number;
   title: {
@@ -18,6 +43,7 @@ interface WordPressPost {
   slug: string;
   date: string;
   modified: string;
+  acf?: WordPressACF;
 }
 
 interface WordPressPage extends WordPressPost {

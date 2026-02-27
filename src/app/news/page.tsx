@@ -1,3 +1,5 @@
+'use client';
+
 import Header from '@/components/Header';
 import Footer from '@/components/Footer';
 
@@ -53,70 +55,106 @@ const NewsPage = () => {
   ];
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-purple-50">
       <Header />
       <main className="container mx-auto px-4 py-8">
-        <div className="mb-12 text-center">
-          <h1 className="text-4xl font-bold text-gray-900 mb-4">News & Updates</h1>
-          <p className="text-xl text-gray-600 max-w-3xl mx-auto">
-            Stay informed about the latest developments, industry trends, and company news from JTPIPELINE
-          </p>
-        </div>
-
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-          {newsArticles.map((article) => (
-            <article 
-              key={article.id} 
-              className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow duration-300"
-            >
-              <div className="h-48 bg-gray-200 flex items-center justify-center">
-                <img 
-                  src={article.imageUrl} 
-                  alt={article.title} 
-                  className="w-full h-full object-cover"
-                />
-              </div>
-              <div className="p-6">
-                <div className="flex justify-between items-center mb-3">
-                  <span className="inline-block bg-blue-100 text-blue-800 text-xs px-2 py-1 rounded">
-                    {article.category}
-                  </span>
-                  <span className="text-sm text-gray-500">{article.date}</span>
-                </div>
-                <h2 className="text-xl font-semibold text-gray-900 mb-2">{article.title}</h2>
-                <p className="text-gray-600 mb-4">{article.excerpt}</p>
-                <div className="flex flex-wrap gap-2 mb-4">
-                  {article.tags.map((tag, index) => (
-                    <span 
-                      key={index} 
-                      className="text-xs bg-gray-100 text-gray-600 px-2 py-1 rounded"
-                    >
-                      #{tag}
+        <div className="max-w-7xl mx-auto">
+          {/* 页面标题和描述 */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl font-bold text-gray-900 mb-4">新闻动态</h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              了解JTPIPELINE最新动态、行业资讯和技术创新，掌握管道行业发展趋势
+            </p>
+          </div>
+          
+          {/* 新闻分类筛选 */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-12">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-3xl font-bold text-gray-900">新闻分类</h2>
+              <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                {newsArticles.length} 篇文章
+              </span>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+              <button className="px-6 py-3 bg-gradient-to-r from-blue-600 to-blue-700 text-white rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 shadow-lg">
+                全部新闻
+              </button>
+              <button className="px-6 py-3 bg-white text-gray-700 border border-gray-200 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:bg-gray-50">
+                公司动态
+              </button>
+              <button className="px-6 py-3 bg-white text-gray-700 border border-gray-200 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:bg-gray-50">
+                行业资讯
+              </button>
+              <button className="px-6 py-3 bg-white text-gray-700 border border-gray-200 rounded-xl font-semibold transition-all duration-300 transform hover:scale-105 hover:bg-gray-50">
+                技术文章
+              </button>
+            </div>
+          </div>
+          
+          {/* 新闻列表 - 优化布局 */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+            {newsArticles.map((article) => (
+              <div 
+                key={article.id} 
+                className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 group"
+              >
+                {/* 新闻图片 */}
+                <div className="h-56 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden relative">
+                  <img
+                    src={article.imageUrl}
+                    alt={article.title}
+                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                  />
+                  {/* 新闻标签 */}
+                  <div className="absolute top-4 left-4">
+                    <span className="bg-gradient-to-r from-blue-600 to-purple-600 text-white text-xs font-medium px-3 py-1 rounded-full shadow-lg">
+                      {article.category}
                     </span>
-                  ))}
+                  </div>
+                  {/* 日期标记 */}
+                  <div className="absolute top-4 right-4 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                    {article.date}
+                  </div>
                 </div>
-                <button className="text-blue-600 font-medium hover:underline">
-                  Read More →
-                </button>
+                
+                {/* 新闻内容 */}
+                <div className="p-6">
+                  <h3 className="text-xl font-bold text-gray-900 mb-3 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                    {article.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm mb-4 line-clamp-3">{article.excerpt}</p>
+                  
+                  {/* 作者和操作 */}
+                  <div className="flex items-center justify-between pt-4 border-t border-gray-100">
+                    <div className="flex items-center">
+                      <div className="w-8 h-8 bg-gradient-to-r from-blue-500 to-purple-500 rounded-full flex items-center justify-center text-white text-sm font-bold mr-2">
+                        {article.author.charAt(0)}
+                      </div>
+                      <span className="text-gray-500 text-sm">{article.author}</span>
+                    </div>
+                    <button className="bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-2 rounded-lg transition-all duration-300 text-sm font-semibold transform hover:scale-105 shadow-lg">
+                      阅读全文
+                    </button>
+                  </div>
+                  
+                  {/* 标签 */}
+                  <div className="mt-4 flex flex-wrap gap-2">
+                    {article.tags.map((tag, index) => (
+                      <span key={index} className="bg-gray-100 text-gray-600 text-xs px-3 py-1 rounded-full">
+                        #{tag}
+                      </span>
+                    ))}
+                  </div>
+                </div>
               </div>
-            </article>
-          ))}
-        </div>
-
-        {/* Newsletter Signup */}
-        <div className="mt-16 bg-blue-50 rounded-xl p-8 text-center">
-          <h2 className="text-2xl font-bold text-gray-900 mb-2">Stay Updated</h2>
-          <p className="text-gray-600 mb-6 max-w-2xl mx-auto">
-            Subscribe to our newsletter to receive the latest news, product updates, and industry insights directly to your inbox.
-          </p>
-          <div className="max-w-md mx-auto flex">
-            <input 
-              type="email" 
-              placeholder="Enter your email address" 
-              className="flex-grow px-4 py-2 border border-gray-300 rounded-l-md focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-            />
-            <button className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-r-md transition-colors">
-              Subscribe
+            ))}
+          </div>
+          
+          {/* 加载更多 */}
+          <div className="text-center mt-12">
+            <button className="bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 px-8 py-3 rounded-xl transition-all duration-300 font-semibold transform hover:scale-105 border border-gray-300">
+              加载更多新闻
             </button>
           </div>
         </div>

@@ -238,24 +238,59 @@ const ProductsPage = () => {
   }, []);
 
   return (
-    <div className="min-h-screen bg-gray-50">
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50">
       <Header />
-      <main>
-        {/* 英雄区域 */}
-        <section className="bg-gradient-to-r from-blue-900 to-blue-700 text-white py-20">
-          <div className="container mx-auto px-4 text-center">
-            <h1 className="text-4xl md:text-5xl font-bold mb-6">我们的产品</h1>
-            <p className="text-xl max-w-3xl mx-auto mb-8">
-              提供高品质、可靠的管道及配件解决方案，满足全球客户的多样化需求
+      <main className="container mx-auto px-4 py-8">
+        <div className="max-w-7xl mx-auto">
+          {/* 页面标题和描述 */}
+          <div className="text-center mb-12">
+            <h1 className="text-5xl font-bold text-gray-900 mb-4">产品中心</h1>
+            <p className="text-xl text-gray-600 max-w-3xl mx-auto">
+              提供全面的管道系统解决方案，涵盖PE管道、PVC管道、管道配件和复合管道等产品系列
             </p>
-            <Link 
-              href="/contact" 
-              className="bg-yellow-500 hover:bg-yellow-600 text-gray-900 font-bold py-3 px-8 rounded-lg transition-all duration-300 transform hover:-translate-y-1 hover:shadow-lg inline-block"
-            >
-              咨询产品
-            </Link>
           </div>
-        </section>
+          
+          {/* 产品分类筛选 - 优化布局 */}
+          <div className="bg-white rounded-2xl shadow-xl p-8 mb-12">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-3xl font-bold text-gray-900">产品分类</h2>
+              <span className="text-sm text-gray-500 bg-gray-100 px-3 py-1 rounded-full">
+                {selectedCategory === 'All' ? '全部产品' : productCategories.find(c => c.id === selectedCategory)?.name}
+              </span>
+            </div>
+            
+            <div className="grid grid-cols-2 md:grid-cols-5 gap-3">
+              <button
+                onClick={() => setSelectedCategory('All')}
+                className={`px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 ${
+                  selectedCategory === 'All'
+                    ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg'
+                    : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                }`}
+              >
+                <div className="text-center">
+                  <div className="text-lg font-semibold">全部产品</div>
+                  <div className="text-xs text-gray-500 mt-1">所有类别</div>
+                </div>
+              </button>
+              {productCategories.map((category) => (
+                <button
+                  key={category.id}
+                  onClick={() => setSelectedCategory(category.id)}
+                  className={`px-4 py-3 rounded-xl transition-all duration-300 transform hover:scale-105 ${
+                    selectedCategory === category.id
+                      ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-lg'
+                      : 'bg-white text-gray-700 hover:bg-gray-50 border border-gray-200'
+                  }`}
+                >
+                  <div className="text-center">
+                    <div className="text-lg font-semibold">{category.name}</div>
+                    <div className="text-xs text-gray-500 mt-1">{category.uses.length}种应用</div>
+                  </div>
+                </button>
+              ))}
+            </div>
+          </div>
 
         {/* 产品分类 */}
         <section 
@@ -359,19 +394,19 @@ const ProductsPage = () => {
                   <h4 className="text-lg font-semibold mb-4">适用产品：</h4>
                   <ul className="space-y-2 mb-6">
                     <li className="flex items-center gap-2">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                       <span>HDPE给水管</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                       <span>PVC-C冷热给水管</span>
                     </li>
                     <li className="flex items-center gap-2">
-                      <svg className="w-5 h-5 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <svg className="w-4 h-4 text-blue-600" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                         <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
                       </svg>
                       <span>SRTP钢丝增强管</span>
@@ -539,175 +574,110 @@ const ProductsPage = () => {
           </div>
         </section>
 
-        {/* 产品展示 */}
-        <section className="py-20 bg-gray-50">
+        {/* 产品展示 - 优化布局 */}
+        <section className="py-12" ref={sectionRef}>
           <div className="container mx-auto px-4">
-            <h2 className="text-3xl font-bold text-center mb-12 text-gray-900">
-              {selectedCategory === 'All' ? '全部产品' : productCategories.find(c => c.id === selectedCategory)?.name}
-            </h2>
-            
-            {/* 筛选器 */}
-            <div className="mb-12 p-6 bg-white rounded-lg shadow">
-              <h3 className="text-xl font-semibold mb-6">产品筛选</h3>
-              <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">产品类别</label>
-                  <select 
-                    className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={selectedCategory}
-                    onChange={(e) => setSelectedCategory(e.target.value)}
-                  >
-                    <option value="All">全部类别</option>
-                    {productCategories.map(category => (
-                      <option key={category.id} value={category.id}>{category.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">产品名称</label>
-                  <select 
-                    className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={selectedProduct}
-                    onChange={(e) => {
-                      const productId = parseInt(e.target.value);
-                      setSelectedProduct(productId);
-                      if (productId > 0) {
-                        const product = products.find(p => p.id === productId);
-                        if (product) {
-                          setSelectedCategory(product.categoryId);
-                          setSelectedModel(product.model);
-                        }
-                      }
-                    }}
-                  >
-                    <option value="0">全部产品</option>
-                    {filteredProducts.map(product => (
-                      <option key={product.id} value={product.id}>{product.name}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">产品型号</label>
-                  <select 
-                    className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={selectedModel}
-                    onChange={(e) => setSelectedModel(e.target.value)}
-                  >
-                    <option value="All">全部型号</option>
-                    {[...new Set(filteredProducts.map(p => p.model))].map(model => (
-                      <option key={model} value={model}>{model}</option>
-                    ))}
-                  </select>
-                </div>
-                <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-2">材质</label>
-                  <select 
-                    className="w-full border border-gray-300 rounded-md px-4 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                    value={selectedMaterial}
-                    onChange={(e) => setSelectedMaterial(e.target.value)}
-                  >
-                    <option value="All">全部材质</option>
-                    <option value="聚乙烯">聚乙烯</option>
-                    <option value="聚氯乙烯">聚氯乙烯</option>
-                    <option value="钢丝增强">钢丝增强</option>
-                    <option value="钢带增强">钢带增强</option>
-                  </select>
-                </div>
+            {/* 产品统计信息 */}
+            <div className="flex items-center justify-between mb-8">
+              <div className="text-gray-600">
+                <span className="font-semibold text-blue-600">{filteredProducts.length}</span> 个产品
+                {selectedCategory !== 'All' && (
+                  <span className="ml-2">在 <span className="font-semibold">{productCategories.find(c => c.id === selectedCategory)?.name}</span> 分类中</span>
+                )}
               </div>
-              <div className="mt-6 flex justify-end">
-                <button 
-                  className="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-md transition-colors"
-                  onClick={() => {
-                    setSelectedCategory('All');
-                    setSelectedProduct(0);
-                    setSelectedModel('All');
-                    setSelectedMaterial('All');
-                  }}
-                >
-                  重置筛选
-                </button>
+              <div className="flex items-center space-x-4">
+                <span className="text-sm text-gray-500">排序:</span>
+                <select className="border border-gray-300 rounded-lg px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500">
+                  <option>默认排序</option>
+                  <option>按名称排序</option>
+                  <option>按型号排序</option>
+                </select>
               </div>
             </div>
-
-            {/* 产品列表 */}
-            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-              {filteredProducts.map((product, index) => (
-                <div 
-                  key={product.id} 
-                  className={`bg-white rounded-lg shadow-md overflow-hidden transition-all duration-500 transform hover:-translate-y-2 hover:shadow-xl ${visibleCategories ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-10'}`}
-                  style={{ transitionDelay: `${index * 100}ms` }}
+            
+            {/* 产品网格布局 */}
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+              {filteredProducts.map((product) => (
+                <div
+                  key={product.id}
+                  className="bg-white rounded-2xl shadow-lg overflow-hidden hover:shadow-2xl transition-all duration-500 transform hover:-translate-y-3 group"
                 >
-                  <div className="relative h-56 overflow-hidden">
-                    <Image 
-                      src={product.image} 
-                      alt={product.name} 
-                      fill
-                      className="object-cover transition-transform duration-700 hover:scale-110"
-                      quality={80}
+                  {/* 产品图片 */}
+                  <div className="h-56 bg-gradient-to-br from-gray-100 to-gray-200 overflow-hidden relative">
+                    <Image
+                      src={product.image}
+                      alt={product.name}
+                      width={400}
+                      height={224}
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
                     />
-                    <div className="absolute top-4 left-4 bg-blue-600 text-white text-xs font-bold px-2 py-1 rounded">
-                      {product.subcategory}
-                    </div>
-                  </div>
-                  <div className="p-6">
-                    <div className="flex justify-between items-start mb-4">
-                      <div>
-                        <h3 className="text-lg font-semibold text-gray-900">{product.name}</h3>
-                        <p className="text-sm text-gray-500">型号：{product.model}</p>
-                      </div>
-                      <span className="inline-flex items-center px-3 py-1 rounded-full text-sm font-medium bg-blue-100 text-blue-800">
-                        {product.material}
+                    {/* 产品标签 */}
+                    <div className="absolute top-4 left-4">
+                      <span className="bg-blue-600 text-white text-xs font-medium px-3 py-1 rounded-full shadow-lg">
+                        {product.category}
                       </span>
                     </div>
+                  </div>
+                  
+                  {/* 产品信息 */}
+                  <div className="p-6">
+                    <div className="mb-3">
+                      <h3 className="text-xl font-bold text-gray-900 mb-2 line-clamp-2 group-hover:text-blue-600 transition-colors">
+                        {product.name}
+                      </h3>
+                      <p className="text-gray-600 text-sm line-clamp-2">{product.description}</p>
+                    </div>
                     
-                    <div className="mb-4">
-                      <h4 className="text-sm font-medium text-gray-700 mb-2">应用领域：</h4>
-                      <div className="flex flex-wrap gap-2 mb-4">
-                        {product.uses.map((use, idx) => (
-                          <span key={idx} className="bg-green-100 text-green-800 text-xs px-2 py-1 rounded">
-                            {use}
-                          </span>
-                        ))}
+                    {/* 产品规格 */}
+                    <div className="space-y-2 mb-4">
+                      <div className="flex items-center text-sm">
+                        <span className="text-gray-500 font-medium w-20">型号:</span>
+                        <span className="text-gray-700 font-semibold">{product.model}</span>
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <span className="text-gray-500 font-medium w-20">材质:</span>
+                        <span className="text-gray-700">{product.material}</span>
+                      </div>
+                      <div className="flex items-center text-sm">
+                        <span className="text-gray-500 font-medium w-20">压力:</span>
+                        <span className="text-gray-700">{product.pressureRating}</span>
                       </div>
                     </div>
                     
-                    <div className="space-y-2 mb-6">
-                      <div className="flex justify-between">
-                        <span className="text-gray-600">规格：</span>
-                        <span className="text-gray-900 text-sm">{product.sizes.slice(0, 3).join(', ')} {product.sizes.length > 3 ? '...' : ''}</span>
-                      </div>
-                      {product.pressureRating && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">压力等级：</span>
-                          <span className="text-gray-900">{product.pressureRating}</span>
-                        </div>
-                      )}
-                      {product.angle && (
-                        <div className="flex justify-between">
-                          <span className="text-gray-600">角度：</span>
-                          <span className="text-gray-900">{product.angle}</span>
-                        </div>
-                      )}
-                    </div>
-                    
+                    {/* 操作按钮 */}
                     <div className="flex space-x-3">
-                      <Link 
+                      <Link
                         href={`/products/${product.id}`}
-                        className="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-2 px-4 rounded-md transition-colors text-center"
+                        className="flex-1 bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-4 py-3 rounded-xl transition-all duration-300 text-sm font-semibold text-center transform hover:scale-105 shadow-lg"
                       >
                         查看详情
                       </Link>
-                      <Link 
+                      <Link
                         href="/contact"
-                        className="flex-1 border border-blue-600 text-blue-600 hover:bg-blue-50 py-2 px-4 rounded-md transition-colors text-center"
+                        className="flex-1 bg-gradient-to-r from-gray-100 to-gray-200 hover:from-gray-200 hover:to-gray-300 text-gray-700 px-4 py-3 rounded-xl transition-all duration-300 text-sm font-semibold text-center transform hover:scale-105 border border-gray-300"
                       >
-                        询价
+                        立即询价
                       </Link>
                     </div>
                   </div>
                 </div>
               ))}
             </div>
+            
+            {/* 空状态 */}
+            {filteredProducts.length === 0 && (
+              <div className="text-center py-16">
+                <div className="text-gray-400 text-6xl mb-4">📦</div>
+                <h3 className="text-xl font-semibold text-gray-600 mb-2">暂无产品</h3>
+                <p className="text-gray-500">当前筛选条件下没有找到相关产品</p>
+                <button
+                  onClick={() => setSelectedCategory('All')}
+                  className="mt-4 bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-lg transition-colors"
+                >
+                  查看全部产品
+                </button>
+              </div>
+            )}
           </div>
         </section>
 
@@ -734,6 +704,7 @@ const ProductsPage = () => {
             </div>
           </div>
         </section>
+      </div>
       </main>
       <Footer />
     </div>
